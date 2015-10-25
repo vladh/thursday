@@ -24,7 +24,8 @@ def makeNotesIntoTonicIntervals(notes, tonic):
   @param tonic {music21.note}
   @returns {List[music21.interval]}
   """
-  return map(lambda(note): interval.Interval(note, tonic), notes)
+  # NOTE: Takes ~0.1s for 500 notes, ~1.5s for 5500 notes
+  return [interval.Interval(note, tonic) for note in notes]
 
 def getIntervalFrequencies(intervals):
   """

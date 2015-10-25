@@ -35,8 +35,10 @@ def loadScore(source):
   @returns {music21.score}
   """
   if 'filepath' in source:
+    print 'Loading score ' + source['filepath']
     return converter.parse(source['filepath'])
   elif 'corpusFilepath' in source:
+    print 'Loading score ' + source['corpusFilepath']
     return corpus.parse(source['corpusFilepath'])
 
 def loadScores(sources):
