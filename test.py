@@ -33,23 +33,55 @@ def evaluateClassifier(clf, trainSamples, trainLabels, testSamples, testLabels):
   acc = (testLabels == pred).sum() / float(len(testLabels))
   return [pred, acc]
 
-def main():
+def prettyEvaluateClassifier(classifier):
+  [pred, acc] = evaluateClassifier(classifier['clf'], trainSamples, trainLabels, testSamples, testLabels)
+  return [classifier['name'], str(pred) + ' (' + str(acc * 100) + '% accuracy)']
+
+def getTrainData():
+  # bachSources = tday.scores.getFileComposerSources('Bach, Johann Sebastian')
+  # bachLabels = ['bach' for _ in bachSources]
+
+  # debussySources = tday.scores.getFileComposerSources('Debussy, Claude')
+  # debussyLabels = ['bach' for _ in debussySources]
+
+  # sources = np.array(bachSources + debussySources)
+  # labels = np.array(bachLabels + debussyLabels)
+
+  # [shufSources, shufLabels] = tday.util.unisonShuffle(sources, labels)
+
+  # trainSources = shufSources[:-10]
+  # trainLabels = shufLabels[:-10]
+  # trainScores = tday.scores.loadScores(trainSources)
+
   trainScores = [] + \
-                tday.scores.loadScores(tday.scores.getComposerSources('bach', limit=7)) + \
-                tday.scores.loadScores(tday.scores.getComposerSources('schumann', limit=7))
-  trainSamples = [tday.features.makeIntervalFrequencyFeature(score)[0] for score in trainScores]
+                tday.scores.loadScores(tday.scores.getCorpusComposerSources('bach', limit=7)) + \
+                tday.scores.loadScores(tday.scores.getCorpusComposerSources('schumann', limit=7))
   trainLabels = (['bach'] * 7) + (['schumann'] * 7)
 
+  trainSamples = [tday.features.makeIntervalFrequencyFeature(score)[0] for score in trainScores]
+
+  return [trainSamples, trainLabels]
+
+def getTestData():
+  # testSources = shufSources[-10:]
+  # testLabels = shufLabels[-10:]
+  # testScores = tday.scores.loadScores(testSources)
+
   testScores = [] + \
-               tday.scores.loadScores(tday.scores.getComposerSources('bach', limit=40))[-6:-1]
-  testSamples = [tday.features.makeIntervalFrequencyFeature(score)[0] for score in testScores]
+               tday.scores.loadScores(tday.scores.getCorpusComposerSources('bach', limit=40))[-6:-1]
   testLabels = np.array(['bach'] * 5)
 
+  testSamples = [tday.features.makeIntervalFrequencyFeature(score)[0] for score in testScores]
+
+  return [testSamples, testLabels]
+
+def main():
+  [trainSamples, trainLabels] = getTrainData()
+  [testSamples, testLabels] = getTrainData()
+
   tday.util.printTable('Samples', [
-    ['Train samples', trainSamples],
-    ['Train labels', trainLabels],
-    ['Test samples', testSamples],
-    ['Test labels', testLabels]
+    ['Train samples', trainSamples], ['Train labels', trainLabels],
+    ['Test samples', testSamples], ['Test labels', testLabels]
   ])
 
   classifiers = [
@@ -59,11 +91,7 @@ def main():
     {'name': 'Gaussian naive Bayes', 'clf': GaussianNB()}
   ]
 
-  def wrapEvaluateClassifier(classifier):
-    [pred, acc] = evaluateClassifier(classifier['clf'], trainSamples, trainLabels, testSamples, testLabels)
-    return [classifier['name'], str(pred) + ' (' + str(acc * 100) + '% accuracy)']
-
-  evaluations = map(wrapEvaluateClassifier, classifiers)
+  evaluations = map(prettyEvaluateClassifier, classifiers)
   tday.util.printTable('Predictions', evaluations)
 
 if __name__ == '__main__':

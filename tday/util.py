@@ -1,3 +1,5 @@
+import numpy as np
+
 def printTable(heading, info):
   """
   Prints a heading and some custom extra pairs of information.
@@ -14,3 +16,7 @@ def printTable(heading, info):
   print '------------------------------'
   print
   print
+
+def unisonShuffle(a, b):
+  p = np.random.permutation(len(a))
+  return a[p], b[p]

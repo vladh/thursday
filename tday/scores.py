@@ -7,12 +7,15 @@ Source format:
 """
 
 from music21 import converter, corpus, interval, note
+from os import listdir
+from os.path import isfile, join
 
-sourceRoot = '../scores/'
+composerRoot = '../composers/'
+scoreRoot = '../scores/'
 
 def getTestSources():
   return [
-    {'filepath': sourceRoot + 'bwv563.xml'},
+    {'filepath': scoreRoot + 'bwv563.xml'},
     {'corpusFilepath': 'bach/bwv127.5.mxl'},
     {'corpusFilepath': 'haydn/opus74no1/movement1.mxl'},
     {'corpusFilepath': 'monteverdi/madrigal.3.1.xml'},
@@ -21,13 +24,18 @@ def getTestSources():
     {'corpusFilepath': 'verdi/laDonnaEMobile.mxl'}
   ]
 
-def getComposerSources(composer, limit=None):
+def getFileComposerSources(composer):
+  directory = composerRoot + composer + '/'
+  paths = [path for path in listdir(directory) if isfile(join(directory, path))]
+  sources = [{'filepath': directory + path} for path in paths]
+  return sources
+
+def getCorpusComposerSources(composer, limit=None):
   sources = [{'corpusFilepath': path} for path in corpus.getComposer(composer)]
-  if limit != None:
-    if len(sources) < limit:
-      return sources
-    else:
-      return sources[:limit]
+  if limit == None or len(sources) < limit:
+    return sources
+  else:
+    return sources[:limit]
 
 def loadScore(source):
   """
