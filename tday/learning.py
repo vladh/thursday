@@ -23,48 +23,17 @@ def evaluateClassifier(clf, trainSamples, trainLabels, testSamples, testLabels):
   acc = (testLabels == pred).sum() / float(len(testLabels))
   return [pred, acc]
 
-def getTrainData():
-  # bachSources = tday.scores.getFileComposerSources('Bach, Johann Sebastian')
-  # bachLabels = ['bach' for _ in bachSources]
+def getTrainData(scores, labels):
+  samples = np.array([tday.features.makeIntervalFrequencyFeature(score)[0] for score in scores])
+  [shufSamples, shufLabels] = tday.util.unisonShuffle(samples, labels)
+  return [shufSamples, shufLabels]
 
-  # debussySources = tday.scores.getFileComposerSources('Debussy, Claude')
-  # debussyLabels = ['bach' for _ in debussySources]
+def getTestData(scores, labels):
+  samples = np.array([tday.features.makeIntervalFrequencyFeature(score)[0] for score in scores])
+  [shufSamples, shufLabels] = tday.util.unisonShuffle(samples, labels)
+  return [shufSamples, shufLabels]
 
-  # sources = np.array(bachSources + debussySources)
-  # labels = np.array(bachLabels + debussyLabels)
-
-  # [shufSources, shufLabels] = tday.util.unisonShuffle(sources, labels)
-
-  # trainSources = shufSources[:-10]
-  # trainLabels = shufLabels[:-10]
-  # trainScores = tday.scores.loadScores(trainSources)
-
-  trainScores = [] + \
-                tday.scores.loadScores(tday.scores.getCorpusComposerSources('bach', limit=7)) + \
-                tday.scores.loadScores(tday.scores.getCorpusComposerSources('schumann', limit=7))
-  trainLabels = (['bach'] * 7) + (['schumann'] * 7)
-
-  trainSamples = [tday.features.makeIntervalFrequencyFeature(score)[0] for score in trainScores]
-
-  return [trainSamples, trainLabels]
-
-def getTestData():
-  # testSources = shufSources[-10:]
-  # testLabels = shufLabels[-10:]
-  # testScores = tday.scores.loadScores(testSources)
-
-  testScores = [] + \
-               tday.scores.loadScores(tday.scores.getCorpusComposerSources('bach', limit=40))[-6:-1]
-  testLabels = np.array(['bach'] * 5)
-
-  testSamples = [tday.features.makeIntervalFrequencyFeature(score)[0] for score in testScores]
-
-  return [testSamples, testLabels]
-
-def evaluateClassifiers():
-  [trainSamples, trainLabels] = getTrainData()
-  [testSamples, testLabels] = getTestData()
-
+def evaluateClassifiers(trainSamples, trainLabels, testSamples, testLabels):
   tday.util.printTable('Samples', [
     ['Train samples', trainSamples], ['Train labels', trainLabels],
     ['Test samples', testSamples], ['Test labels', testLabels]
