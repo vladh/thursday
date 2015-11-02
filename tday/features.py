@@ -1,5 +1,6 @@
 import tday.music
-import music21.musedata.base40
+
+import music21
 import numpy as np
 import time
 
@@ -14,9 +15,7 @@ def makeIntervalFrequencyFeature(score):
   print 'Making interval frequency feature for ' + str(getattr(score, 'corpusFilepath', score.filePath))
   intervalTable = music21.musedata.base40.base40IntervalTable.values()
 
-  sig = score.flat.getKeySignatures()[0]
-  tonicAndMode = sig.getScale().name.split()
-  key = music21.key.Key(tonicAndMode[0], tonicAndMode[1])
+  key = tday.music.keyFromKeySignature(score.flat.getKeySignatures()[0])
 
   intervals = tday.music.makeNotesIntoTonicIntervals(score.flat.pitches, key.getTonic())
   freq = tday.music.getIntervalFrequencies(intervals)

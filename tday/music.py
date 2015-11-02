@@ -1,19 +1,17 @@
-from music21 import interval, note
+import music21
 from collections import defaultdict, Counter
 import operator
 
-def transposeScoreToKey(score, keyTonic):
+def keyFromKeySignature(keySignature):
   """
-  Transposes a score to the key whose tonic is the supplied keyTonic.
+  Makes a music21.key.KeySignature into a music21.key.Key.
 
-  @param score {music21.score}
-  @param keyTonic {music21.note}
-  @returns {music21.score}
+  @param keySignature {music21.key.KeySignature}
+  @returns {music21.key.Key}
   """
-  key = score.analyze('key')
-  transposeInterval = interval.Interval(note.Note(key.getTonic()), keyTonic)
-  tScore = score.transpose(transposeInterval)
-  return tScore
+  tonicAndMode = keySignature.getScale().name.split()
+  key = music21.key.Key(tonicAndMode[0], tonicAndMode[1])
+  return key
 
 def makeNotesIntoTonicIntervals(notes, tonic):
   """
@@ -25,7 +23,7 @@ def makeNotesIntoTonicIntervals(notes, tonic):
   @returns {List[music21.interval]}
   """
   # NOTE: Takes ~0.1s for 500 notes, ~1.5s for 5500 notes
-  return [interval.Interval(note, tonic) for note in notes]
+  return [music21.interval.Interval(note, tonic) for note in notes]
 
 def getIntervalFrequencies(intervals):
   """
