@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import tday.scores
-import tday.util
+import tday.mxlScores
+import tday.plainScores
 
 import music21
 import numpy as np
@@ -25,10 +25,12 @@ def main():
 
   # tday.learning.evaluateClassifiers(trainSamples, trainLabels, testSamples, testLabels)
 
-  score = tday.scores.loadScores(tday.scores.getCorpusComposerSources('bach', limit=1))[0]
-  plainScore = tday.util.music21ScoreToPlainScore(score)
-
-  print yaml.dump(plainScore)
+  paths = tday.mxlScores.getCorpusComposerPaths('bach', limit=1)
+  for path in paths:
+    score = tday.mxlScores.loadCorpusPaths([path])[0]
+    plainScore = tday.plainScores.fromMxl(score)
+    print yaml.dump(plainScore)
+    print path
 
 if __name__ == '__main__':
   main()
