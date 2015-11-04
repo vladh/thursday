@@ -7,6 +7,7 @@ import tday.plainScores
 import music21
 import numpy as np
 import yaml
+from os.path import basename, dirname
 
 def main():
   # trainScores = np.array(
@@ -25,12 +26,16 @@ def main():
 
   # tday.learning.evaluateClassifiers(trainSamples, trainLabels, testSamples, testLabels)
 
-  paths = tday.mxlScores.getCorpusComposerPaths('bach', limit=1)
+  paths = tday.mxlScores.getCorpusComposerPaths('bach') + \
+          tday.mxlScores.getCorpusComposerPaths('trecento')
   for path in paths:
     score = tday.mxlScores.loadCorpusPaths([path])[0]
     plainScore = tday.plainScores.fromMxl(score)
-    print yaml.dump(plainScore)
-    print path
+    plainParentName = basename(dirname(path))
+    plainFileName = basename(path)
+    plainName = plainParentName + '/' + plainFileName
+    print 'Writing simple score for ' + plainName
+    tday.plainScores.write(plainScore, plainName)
 
 if __name__ == '__main__':
   main()
