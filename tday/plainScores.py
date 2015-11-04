@@ -2,8 +2,10 @@ import tday.music
 import tday.paths
 
 import music21
-from os import mkdir
-from os.path import dirname, exists
+import yaml
+from os import mkdir, listdir
+from os.path import dirname, exists, isfile
+from os.path import isfile, join
 
 def fromMxl(score):
   plainScore = {
@@ -44,8 +46,25 @@ def fromMxl(score):
 
   return plainScore
 
-def write(plainScore, plainName):
-  plainPath = tday.paths.paths['plainCorpusRoot'] + plainName
+def loadScore(path):
+  with open(path, 'r') as stream:
+    return yaml.load(stream)
+
+def getCorpusComposerPaths(composer):
+  directory = tday.paths.paths['plainCorpusRoot'] + composer + '/'
+  paths = [
+    join(directory, path)
+    for path in listdir(directory)
+    if isfile(join(directory, path))
+  ]
+  return paths
+
+def loadScores(paths):
+  scores = [loadScore(path) for path in paths]
+  return scores
+
+def writeCorpusScore(plainScore, composer, name):
+  plainPath = tday.paths.paths['plainCorpusRoot'] + composer + '/' + name
   plainDirName = dirname(plainPath)
   if not exists(plainDirName): mkdir(plainDirName)
   with open(plainPath, 'w') as fp:

@@ -15,11 +15,14 @@ def getComposerPaths(composer):
   @return {List<str>}
   """
   directory = tday.paths.paths['mxlComposerRoot'] + composer + '/'
-  paths = [join(directory, path) for path in listdir(directory)]
-  paths = [path for path in paths if isfile(path)]
+  paths = [
+    join(directory, path)
+    for path in listdir(directory)
+    if isfile(join(directory, path))
+  ]
   return paths
 
-def loadPaths(paths):
+def loadScores(paths):
   """
   Loads an array of paths and returns their associated scores.
 
@@ -41,7 +44,7 @@ def getCorpusComposerPaths(composer, limit=None):
     paths = paths[:limit]
   return paths
 
-def loadCorpusPaths(paths):
+def loadCorpusScores(paths):
   """
   Loads an array of corpus paths and returns their scores.
 
