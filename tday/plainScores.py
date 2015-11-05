@@ -1,3 +1,33 @@
+"""
+Plain score format:
+{
+  'name': 'bach/bwv381',
+  'measures': [
+    {
+      'key': 'C major',
+      'timeSignature': '3/4'
+      'notes': [
+        {
+          'start': 0.5,
+          'duration': 2,
+          'keyInterval': 'P5',
+          'keyDegree': 5,
+          'keySemitones': 7
+        },
+        {
+          ...
+        },
+        ...
+      ]
+    },
+    {
+      ...
+    },
+    ...
+  ]
+}
+"""
+
 import tday.music
 import tday.config
 
