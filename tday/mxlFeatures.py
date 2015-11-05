@@ -1,8 +1,5 @@
 import tday.music
-
 import music21
-import numpy as np
-import time
 
 def makeIntervalFrequencyFeature(score):
   """

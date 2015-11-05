@@ -1,15 +1,23 @@
 import tday.music
-import tday.paths
+import tday.config
 
 import music21
 import yaml
+import cPickle as pickle
+from collections import Counter
 from os import mkdir, listdir
-from os.path import dirname, exists, isfile
+from os.path import dirname, exists, isfile, splitext
 from os.path import isfile, join
 
-def fromMxl(score):
+if tday.config.fileFormat == 'pickle':
+  fileExt = '.pickle'
+elif tday.config.fileFormat == 'yaml':
+  fileExt = '.yml'
+
+def fromMxl(score, name='Unknown'):
   plainScore = {
-    'measures': []
+    'measures': [],
+    'name': name
   }
 
   for part in score.parts:
@@ -34,12 +42,12 @@ def fromMxl(score):
         for note in notes:
           offset = score.offset + part.offset + measure.offset + note.offset
           interval = music21.interval.Interval(note.pitch, key.getTonic())
-          semitones = interval.cents / 100
           plainNote = {
             'start': offset,
             'duration': note.duration.quarterLength,
+            'keyInterval': interval.name,
             'keyDegree': interval.intervalClass,
-            'keySemitones': semitones
+            'keySemitones': interval.cents / 100
           }
           plainMeasure['notes'].append(plainNote)
       plainScore['measures'].append(plainMeasure)
@@ -47,16 +55,22 @@ def fromMxl(score):
   return plainScore
 
 def loadScore(path):
+  print '[plainScores#loadScore] ' + path
   with open(path, 'r') as stream:
-    return yaml.load(stream)
+    if tday.config.fileFormat == 'pickle':
+      return pickle.load(stream)
+    elif tday.config.fileFormat == 'yaml':
+      return yaml.load(stream)
 
-def getCorpusComposerPaths(composer):
-  directory = tday.paths.paths['plainCorpusRoot'] + composer + '/'
+def getCorpusComposerPaths(composer, limit=None):
+  directory = join(tday.config.paths['plainCorpusRoot'], composer)
   paths = [
     join(directory, path)
     for path in listdir(directory)
-    if isfile(join(directory, path))
+    if isfile(join(directory, path)) and splitext(join(directory, path))[1] == fileExt
   ]
+  if limit != None and len(paths) > limit:
+    paths = paths[:limit]
   return paths
 
 def loadScores(paths):
@@ -64,8 +78,34 @@ def loadScores(paths):
   return scores
 
 def writeCorpusScore(plainScore, composer, name):
-  plainPath = tday.paths.paths['plainCorpusRoot'] + composer + '/' + name
-  plainDirName = dirname(plainPath)
-  if not exists(plainDirName): mkdir(plainDirName)
-  with open(plainPath, 'w') as fp:
-    fp.write(str(plainScore))
+  path = join(tday.config.paths['plainCorpusRoot'], composer, name)
+  path, ext = splitext(path)
+  path += fileExt
+  print '[plainScores#writeCorpusScore] ' + path
+
+  dirName = dirname(path)
+  if not exists(dirName): mkdir(dirName)
+
+  with open(path, 'w') as fp:
+    if tday.config.fileFormat == 'pickle':
+      fileContent = pickle.dumps(plainScore)
+    elif tday.config.fileFormat == 'yaml':
+      fileContent = yaml.dump(stream)
+    fp.write(fileContent)
+
+def getKeyIntervalFrequencies(score):
+  """
+  Calculates the frequency of keyInterval in the given score's notes.
+
+  @param intervals {plainScore}
+  @return {Dict}
+  """
+  nrIntervals = 0.0
+  intervals = []
+  for measure in score['measures']:
+    for note in measure['notes']:
+      intervals.append(note['keyInterval'])
+      nrIntervals += 1
+  freq = Counter(intervals)
+  freq = {k: v / nrIntervals for k, v in freq.items()}
+  return freq

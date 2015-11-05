@@ -1,8 +1,7 @@
-import tday.paths
+import tday.config
 
 import music21
-import operator
-from collections import defaultdict, Counter
+from collections import Counter
 from os import listdir
 from os.path import isfile, join
 
@@ -14,7 +13,7 @@ def getComposerPaths(composer):
   @param composer {str}
   @return {List<str>}
   """
-  directory = tday.paths.paths['mxlComposerRoot'] + composer + '/'
+  directory = join(tday.config.paths['mxlComposerRoot'], composer)
   paths = [
     join(directory, path)
     for path in listdir(directory)
@@ -89,24 +88,3 @@ def getIntervalFrequencies(intervals):
   freq = Counter(intervalNames)
   freq = {k: v / nrIntervals for k, v in freq.items()}
   return freq
-
-def sortIntervalFrequencies(freq):
-  """
-  Returns a sorted representation of the interval frequency dictionary.
-
-  @param freq {List[music21.interval]}
-  @return {Set}
-  """
-  return sorted(freq.items(), key=operator.itemgetter(1), reverse=True)
-
-def intervalFrequenciesToString(freq):
-  """
-  Gives a string representation of the given sorted interval frequencies.
-
-  @param freq {Set}
-  @return {str}
-  """
-  strings = [interval + ' ' + ('{:.2f}'.format(count)) for interval, count in freq]
-  string = ', '.join(strings)
-  return string
-

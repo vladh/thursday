@@ -1,4 +1,5 @@
 import tday.util
+import tday.config
 import tday.music
 import tday.scores
 import tday.features
@@ -8,6 +9,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn import tree
+from sklearn.externals.six import StringIO
+import os.path
+import time
 
 def evaluateClassifier(clf, trainSamples, trainLabels, testSamples, testLabels):
   """
@@ -22,16 +27,6 @@ def evaluateClassifier(clf, trainSamples, trainLabels, testSamples, testLabels):
   pred = np.array(clf.predict(testSamples))
   acc = (testLabels == pred).sum() / float(len(testLabels))
   return [pred, acc]
-
-def getTrainData(scores, labels):
-  samples = np.array([tday.features.makeIntervalFrequencyFeature(score)[0] for score in scores])
-  [shufSamples, shufLabels] = tday.util.unisonShuffle(samples, labels)
-  return [shufSamples, shufLabels]
-
-def getTestData(scores, labels):
-  samples = np.array([tday.features.makeIntervalFrequencyFeature(score)[0] for score in scores])
-  [shufSamples, shufLabels] = tday.util.unisonShuffle(samples, labels)
-  return [shufSamples, shufLabels]
 
 def evaluateClassifiers(trainSamples, trainLabels, testSamples, testLabels):
   tday.util.printTable('Samples', [
@@ -52,3 +47,18 @@ def evaluateClassifiers(trainSamples, trainLabels, testSamples, testLabels):
 
   evaluations = map(prettyEvaluateClassifier, classifiers)
   tday.util.printTable('Predictions', evaluations)
+
+def testTree(trainSamples, trainLabels, testSamples, testLabels):
+  clf = tree.DecisionTreeClassifier()
+  clf.fit(trainSamples, trainLabels)
+  pred = np.array(clf.predict(testSamples))
+  acc = (testLabels == pred).sum() / float(len(testLabels))
+
+  graphvizPath = os.path.join(
+    tday.config.paths['learning'],
+    'tree-' + str(time.time()) + '.dot'
+  )
+  with open(graphvizPath, 'w') as fp:
+    tree.export_graphviz(clf, out_file=fp)
+
+  return [pred, acc]
