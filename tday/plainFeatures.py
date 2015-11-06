@@ -20,5 +20,4 @@ def makeIntervalFrequencyFeature(score):
     freq.get(intervalName, 0.0)
     for idx, intervalName in base40IntervalTable.iteritems()
   ]
-  print '[plainFeatures#makeIntervalFrequencyFeature] ' + score['name']
   return sample

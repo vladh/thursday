@@ -48,26 +48,41 @@ def main():
   allLabels = np.array(allLabels)
   [allScores, allLabels] = tday.util.unisonShuffle(allScores, allLabels)
   nrSlices = 11
-  [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, 0)
-  [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, 0)
+  rawPredictions = []
+  rawAccuracies = []
 
-  print '[test#main] Training scores:'
-  pprint.pprint(zip([score['name'] for score in trainScores], trainLabels))
-  print '[test#main] Test scores:'
-  pprint.pprint(zip([score['name'] for score in testScores], testLabels))
+  for foldIdx in xrange(nrSlices):
+    print '[test#main] Fold ' + str(foldIdx)
+    [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
+    [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, foldIdx)
 
-  trainSamples = np.array([
-    tday.plainFeatures.makeIntervalFrequencyFeature(score)
-    for score in trainScores
-  ])
-  testSamples = np.array([
-    tday.plainFeatures.makeIntervalFrequencyFeature(score)
-    for score in testScores
-  ])
+    print '[test#main] Training scores:'
+    pprint.pprint(zip([score['name'] for score in trainScores], trainLabels))
+    print '[test#main] Test scores:'
+    pprint.pprint(zip([score['name'] for score in testScores], testLabels))
 
-  [pred, acc] = tday.learning.testTree(trainSamples, trainLabels, testSamples, testLabels)
-  print '[test#main] Predictions: ' + str(pred)
-  print '[test#main] ' + str(acc * 100) + '% accuracy'
+    trainSamples = np.array([
+      tday.plainFeatures.makeIntervalFrequencyFeature(score)
+      for score in trainScores
+    ])
+    testSamples = np.array([
+      tday.plainFeatures.makeIntervalFrequencyFeature(score)
+      for score in testScores
+    ])
+
+    [pred, acc] = tday.learning.testTree(trainSamples, trainLabels, testSamples, testLabels)
+    rawPredictions.append(pred)
+    rawAccuracies.append(acc)
+
+    print '[test#main] Prediction: ' + str(pred)
+    print '[test#main] Accuracy: ' + str(acc * 100)
+    print '[test#main] End of fold ' + str(foldIdx)
+    print
+
+  predictions = np.array(rawPredictions)
+  accuracies = np.array(rawAccuracies)
+  print '[test#main] ' + str(np.average(accuracies) * 100) + '% average accuracy'
+  print '[test#main] ' + str(np.std(accuracies) * 100) + ' standard deviation'
 
 if __name__ == '__main__':
   main()

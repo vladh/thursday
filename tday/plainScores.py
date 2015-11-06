@@ -85,7 +85,6 @@ def fromMxl(score, name='Unknown'):
   return plainScore
 
 def loadScore(path):
-  print '[plainScores#loadScore] ' + path
   with open(path, 'r') as stream:
     if tday.config.fileFormat == 'pickle':
       return pickle.load(stream)
