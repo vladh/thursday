@@ -42,14 +42,16 @@ def evaluateClassifiers(trainSamples, trainLabels, testSamples, testLabels):
   ]
 
   def prettyEvaluateClassifier(classifier):
-    [pred, acc] = evaluateClassifier(classifier['clf'], trainSamples, trainLabels, testSamples, testLabels)
+    [pred, acc] = evaluateClassifier(classifier['clf'], trainSamples, trainLabels,
+                                     testSamples, testLabels)
     return [classifier['name'], str(pred) + ' (' + str(acc * 100) + '% accuracy)']
 
   evaluations = map(prettyEvaluateClassifier, classifiers)
   tday.util.printTable('Predictions', evaluations)
 
-def testTree(trainSamples, trainLabels, testSamples, testLabels):
-  clf = tree.DecisionTreeClassifier()
+def testTree(trainSamples, trainLabels, testSamples, testLabels,
+             classNames=None, maxDepth=None):
+  clf = tree.DecisionTreeClassifier(max_depth=maxDepth)
   clf.fit(trainSamples, trainLabels)
   pred = np.array(clf.predict(testSamples))
   acc = (testLabels == pred).sum() / float(len(testLabels))
@@ -59,6 +61,7 @@ def testTree(trainSamples, trainLabels, testSamples, testLabels):
     'tree-' + str(time.time()) + '.dot'
   )
   with open(graphvizPath, 'w') as fp:
-    tree.export_graphviz(clf, out_file=fp)
+    tree.export_graphviz(clf, out_file=fp, class_names=classNames, filled=True,
+                         rounded=True, special_characters=True)
 
   return [pred, acc]

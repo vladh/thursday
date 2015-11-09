@@ -24,25 +24,8 @@ def getAllData():
     allLabels += ([scoreSet[0]] * len(scoreSet[1]))
   return [allScores, allLabels]
 
-def convertBachTrecentoCorpusToPlain():
-  paths = tday.mxlScores.getCorpusComposerPaths('bach') + \
-          tday.mxlScores.getCorpusComposerPaths('trecento')
-  for path in paths:
-    score = tday.mxlScores.loadCorpusScores([path])[0]
-    composer = basename(dirname(path))
-    name = basename(path)
-    plainScore = tday.plainScores.fromMxl(score, composer + '/' + name)
-    tday.plainScores.writeCorpusScore(plainScore, composer, name)
-
-def testPlainFeatures():
-  paths = tday.plainScores.getCorpusComposerPaths('bach')[0:2]
-  for score in tday.plainScores.loadScores(paths):
-    freq = tday.plainScores.getKeyIntervalFrequencies(score)
-    freq = tday.util.sortDict(freq)
-    print '[test#testPlainFeatures] ' + tday.util.setToString(freq)
-
 def main():
-  # convertBachTrecentoCorpusToPlain()
+  # convertMxlCorpus()
   [allScores, allLabels] = getAllData()
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
@@ -70,7 +53,10 @@ def main():
       for score in testScores
     ])
 
-    [pred, acc] = tday.learning.testTree(trainSamples, trainLabels, testSamples, testLabels)
+    [pred, acc] = tday.learning.testTree(trainSamples, trainLabels,
+                                         testSamples, testLabels,
+                                         classNames=['bach', 'trecento'],
+                                         maxDepth=1)
     rawPredictions.append(pred)
     rawAccuracies.append(acc)
 

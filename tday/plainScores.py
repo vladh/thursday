@@ -138,3 +138,11 @@ def getKeyIntervalFrequencies(score):
   freq = Counter(intervals)
   freq = {k: v / nrIntervals for k, v in freq.items()}
   return freq
+
+def convertMxlCorpus(path):
+  for path in paths:
+    score = tday.mxlScores.loadCorpusScores([path])[0]
+    composer = basename(dirname(path))
+    name = basename(path)
+    plainScore = fromMxl(score, composer + '/' + name)
+    writeCorpusScore(plainScore, composer, name)
