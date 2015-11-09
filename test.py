@@ -23,13 +23,7 @@ def getCorpusComposerData(composers):
     allLabels += ([scoreSet[0]] * len(scoreSet[1]))
   return [allScores, allLabels]
 
-def main():
-  # tday.plainScores.convertMxlCorpus()
-
-  composers = ['bach', 'trecento']
-  nrSlices = 11
-
-  [allScores, allLabels] = getCorpusComposerData(composers)
+def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
   [allScores, allLabels] = tday.util.unisonShuffle(allScores, allLabels)
@@ -37,7 +31,7 @@ def main():
   rawAccuracies = []
 
   for foldIdx in xrange(nrSlices):
-    print '[test#main] Fold ' + str(foldIdx)
+    print '[test#testTree] Fold ' + str(foldIdx)
     [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
     [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, foldIdx)
 
@@ -52,19 +46,28 @@ def main():
 
     [pred, acc] = tday.learning.testTree(trainSamples, trainLabels,
                                          testSamples, testLabels,
-                                         classNames=composers, maxDepth=1)
+                                         classNames=classNames,
+                                         maxDepth=maxDepth)
     rawPredictions.append(pred)
     rawAccuracies.append(acc)
 
-    print '[test#main] Prediction: ' + str(pred)
-    print '[test#main] Accuracy: ' + str(acc * 100)
-    print '[test#main] End of fold ' + str(foldIdx)
+    print '[test#testTree] Prediction: ' + str(pred)
+    print '[test#testTree] Accuracy: ' + str(acc * 100)
+    print '[test#testTree] End of fold ' + str(foldIdx)
     print
 
   predictions = np.array(rawPredictions)
   accuracies = np.array(rawAccuracies)
-  print '[test#main] ' + str(np.average(accuracies) * 100) + '% average accuracy'
-  print '[test#main] ' + str(np.std(accuracies) * 100) + ' standard deviation'
+  print '[test#testTree] ' + str(np.average(accuracies) * 100) + '% average accuracy'
+  print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
+
+def main():
+  # tday.plainScores.convertMxlCorpus(tday.plainScores.getCorpusComposerPaths(''))
+
+  nrSlices = 11
+  composers = ['bach', 'trecento']
+  [allScores, allLabels] = getCorpusComposerData(composers)
+  testTree(allScores, allLabels, nrSlices=nrSlices, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()
