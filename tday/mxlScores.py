@@ -60,8 +60,8 @@ def keyFromKeySignature(keySignature):
   @param keySignature {music21.key.KeySignature}
   @return {music21.key.Key}
   """
-  tonicAndMode = keySignature.getScale().name.split()
-  key = music21.key.Key(tonicAndMode[0], tonicAndMode[1])
+  # HACK: This always outputs the major key. Figure out how to get major/minor.
+  key = music21.key.Key(music21.key.sharpsToPitch(keySignature.sharps))
   return key
 
 def makeNotesIntoTonicIntervals(notes, tonic):

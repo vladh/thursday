@@ -5,7 +5,6 @@ import tday.plainFeatures
 import tday.learning
 
 import numpy as np
-from os.path import basename, dirname
 
 def getCorpusComposerData(composers):
   allScoreSets = []
@@ -50,7 +49,7 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
 
 def main():
-  # tday.plainScores.convertMxlCorpus(tday.plainScores.getCorpusComposerPaths(''))
+  # tday.plainScores.convertMxlCorpus(tday.mxlScores.getCorpusComposerPaths('oneills1850'))
 
   composers = ['bach', 'trecento']
   [allScores, allLabels] = getCorpusComposerData(composers)

@@ -28,7 +28,7 @@ Plain score format:
 }
 """
 
-import tday.music
+import tday.mxlScores
 import tday.config
 
 import music21
@@ -36,7 +36,7 @@ import yaml
 import cPickle as pickle
 from collections import Counter
 from os import mkdir, listdir
-from os.path import dirname, exists, isfile, splitext
+from os.path import basename, dirname, exists, isfile, splitext
 from os.path import isfile, join
 
 if tday.config.fileFormat == 'pickle':
@@ -45,6 +45,10 @@ elif tday.config.fileFormat == 'yaml':
   fileExt = '.yml'
 
 def fromMxl(score, name='Unknown'):
+  if isinstance(score, music21.stream.Opus):
+    print '[plainScores#fromMxl] WARNING: Merging Opus'
+    score = score.mergeScores()
+
   plainScore = {
     'measures': [],
     'name': name
@@ -52,7 +56,7 @@ def fromMxl(score, name='Unknown'):
 
   for part in score.parts:
     for measure in part.getElementsByClass('Measure'):
-      key = tday.music.keyFromKeySignature(measure.flat.getKeySignatures()[0])
+      key = tday.mxlScores.keyFromKeySignature(measure.flat.getKeySignatures()[0])
       sig = measure.getTimeSignatures()[0]
       plainMeasure = {
         'key': key.tonicPitchNameWithCase,
@@ -139,7 +143,7 @@ def getKeyIntervalFrequencies(score):
   freq = {k: v / nrIntervals for k, v in freq.items()}
   return freq
 
-def convertMxlCorpus(path):
+def convertMxlCorpus(paths):
   for path in paths:
     score = tday.mxlScores.loadCorpusScores([path])[0]
     composer = basename(dirname(path))
