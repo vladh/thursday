@@ -56,10 +56,9 @@ def testTree(trainSamples, trainLabels, testSamples, testLabels,
   pred = np.array(clf.predict(testSamples))
   acc = (testLabels == pred).sum() / float(len(testLabels))
 
-  graphvizPath = os.path.join(
-    tday.config.paths['learning'],
-    'tree-' + str(time.time()) + '.dot'
-  )
+  graphvizPath = os.path.join(tday.config.paths['learning'],
+                              'tree-' + str(time.time()) + '.dot')
+
   with open(graphvizPath, 'w') as fp:
     tree.export_graphviz(clf, out_file=fp, class_names=classNames, filled=True,
                          rounded=True, special_characters=True)

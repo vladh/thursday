@@ -12,11 +12,10 @@ import numpy as np
 import pprint
 from os.path import basename, dirname
 
-def getAllData():
-  allScoreSets = [
-    ['bach', tday.plainScores.getCorpusComposerPaths('bach')],
-    ['trecento', tday.plainScores.getCorpusComposerPaths('trecento')]
-  ]
+def getCorpusComposerData(composers):
+  allScoreSets = []
+  for composer in composers:
+    allScoreSets.append([composer, tday.plainScores.getCorpusComposerPaths(composer)])
   allScores = []
   allLabels = []
   for scoreSet in allScoreSets:
@@ -25,12 +24,15 @@ def getAllData():
   return [allScores, allLabels]
 
 def main():
-  # convertMxlCorpus()
-  [allScores, allLabels] = getAllData()
+  # tday.plainScores.convertMxlCorpus()
+
+  composers = ['bach', 'trecento']
+  nrSlices = 11
+
+  [allScores, allLabels] = getCorpusComposerData(composers)
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
   [allScores, allLabels] = tday.util.unisonShuffle(allScores, allLabels)
-  nrSlices = 11
   rawPredictions = []
   rawAccuracies = []
 
@@ -38,11 +40,6 @@ def main():
     print '[test#main] Fold ' + str(foldIdx)
     [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
     [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, foldIdx)
-
-    print '[test#main] Training scores:'
-    pprint.pprint(zip([score['name'] for score in trainScores], trainLabels))
-    print '[test#main] Test scores:'
-    pprint.pprint(zip([score['name'] for score in testScores], testLabels))
 
     trainSamples = np.array([
       tday.plainFeatures.makeIntervalFrequencyFeature(score)
@@ -55,8 +52,7 @@ def main():
 
     [pred, acc] = tday.learning.testTree(trainSamples, trainLabels,
                                          testSamples, testLabels,
-                                         classNames=['bach', 'trecento'],
-                                         maxDepth=1)
+                                         classNames=composers, maxDepth=1)
     rawPredictions.append(pred)
     rawAccuracies.append(acc)
 
