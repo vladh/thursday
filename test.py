@@ -1,15 +1,10 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import tday.util
 import tday.mxlScores
 import tday.plainScores
 import tday.plainFeatures
 import tday.learning
 
-import music21
 import numpy as np
-import pprint
 from os.path import basename, dirname
 
 def getCorpusComposerData(composers):
@@ -31,7 +26,6 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   rawAccuracies = []
 
   for foldIdx in xrange(nrSlices):
-    print '[test#testTree] Fold ' + str(foldIdx)
     [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
     [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, foldIdx)
 
@@ -44,17 +38,11 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
       for score in testScores
     ])
 
-    [pred, acc] = tday.learning.testTree(trainSamples, trainLabels,
-                                         testSamples, testLabels,
-                                         classNames=classNames,
-                                         maxDepth=maxDepth)
+    [pred, acc] = tday.learning.testTree(trainSamples, trainLabels, testSamples, testLabels,
+                                         classNames=classNames, maxDepth=maxDepth)
     rawPredictions.append(pred)
     rawAccuracies.append(acc)
-
-    print '[test#testTree] Prediction: ' + str(pred)
-    print '[test#testTree] Accuracy: ' + str(acc * 100)
-    print '[test#testTree] End of fold ' + str(foldIdx)
-    print
+    print '[test#testTree] (fold ' + str(foldIdx) + ') ' + str(acc * 100) + '% accuracy'
 
   predictions = np.array(rawPredictions)
   accuracies = np.array(rawAccuracies)
@@ -64,10 +52,9 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
 def main():
   # tday.plainScores.convertMxlCorpus(tday.plainScores.getCorpusComposerPaths(''))
 
-  nrSlices = 11
   composers = ['bach', 'trecento']
   [allScores, allLabels] = getCorpusComposerData(composers)
-  testTree(allScores, allLabels, nrSlices=nrSlices, classNames=composers, maxDepth=1)
+  testTree(allScores, allLabels, nrSlices=11, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()
