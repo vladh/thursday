@@ -1,3 +1,4 @@
+import random
 import tday.plainScores
 
 base40IntervalTable = {
@@ -7,9 +8,42 @@ base40IntervalTable = {
   35: 'M7', 36: 'A7', 39: 'd8', 40: 'P8'
 }
 
-def makeIntervalFrequencyFeature(score):
+durationTable = [
+  0.125, 0.25, 0.5, 1, 2, 4
+]
+
+def makeRandomFeature(score):
+  """
+  @param score {plainScore}
+  @returns {List[numpy.array, music21.key, Dict]}
+  """
+  sample = [
+    random.randint(1,10000),
+    random.randint(1,10000),
+    random.randint(1,10000),
+    random.randint(1,10000),
+    random.randint(1,10000)
+  ]
+  return sample
+
+def makeDurationFrequencyFeature(score):
   """
   Extracts an interval frequencies feature.
+  Returns some extra information too.
+
+  @param score {plainScore}
+  @returns {List[numpy.array, music21.key, Dict]}
+  """
+  freq = tday.plainScores.getDurationFrequencies(score)
+  sample = [
+    freq.get(duration, 0.0)
+    for duration in durationTable
+  ]
+  return sample
+
+def makeIntervalFrequencyFeature(score):
+  """
+  Extracts a key interval frequencies feature.
   Returns some extra information too.
 
   @param score {plainScore}

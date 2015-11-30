@@ -9,7 +9,8 @@ import numpy as np
 def getCorpusComposerData(composers):
   allScoreSets = []
   for composer in composers:
-    allScoreSets.append([composer, tday.plainScores.getCorpusComposerPaths(composer)])
+    allScoreSets.append([composer, tday.plainScores.getCorpusComposerPaths(composer)[0:90]])
+  print allScoreSets
   allScores = []
   allLabels = []
   for scoreSet in allScoreSets:
@@ -35,42 +36,60 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   rawPredictions = []
   rawAccuracies = []
 
-  for foldIdx in xrange(nrSlices):
-    [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
-    [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, foldIdx)
+  featureExtractors = [
+    ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
+    ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
+    ['random', tday.plainFeatures.makeRandomFeature],
+  ]
 
-    trainSamples = np.array([
-      tday.plainFeatures.makeIntervalFrequencyFeature(score)
-      for score in trainScores
-    ])
-    testSamples = np.array([
-      tday.plainFeatures.makeIntervalFrequencyFeature(score)
-      for score in testScores
-    ])
+  for featureExtractor in featureExtractors:
+    print '[test#testTree] Using feature extractor: ' + featureExtractor[0]
+    for foldIdx in xrange(nrSlices):
+      [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
+      [trainLabels, testLabels] = tday.util.crossfold(allLabels, nrSlices, foldIdx)
 
-    [pred, acc] = tday.learning.testTree(trainSamples, trainLabels, testSamples, testLabels,
-                                         classNames=classNames, maxDepth=maxDepth)
-    rawPredictions.append(pred)
-    rawAccuracies.append(acc)
-    print '[test#testTree] (fold ' + str(foldIdx) + ') ' + str(acc * 100) + '% accuracy'
+      trainSamples = np.array([featureExtractor[1](score) for score in trainScores])
+      testSamples = np.array([featureExtractor[1](score) for score in testScores])
+      # print trainSamples
 
-  predictions = np.array(rawPredictions)
-  accuracies = np.array(rawAccuracies)
-  print '[test#testTree] ' + str(np.average(accuracies) * 100) + '% average accuracy'
-  print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
+      [pred, acc] = tday.learning.testTree(
+        trainSamples, trainLabels, testSamples, testLabels,
+        classNames=classNames, maxDepth=maxDepth
+      )
+      rawPredictions.append(pred)
+      rawAccuracies.append(acc)
+      # print '[test#testTree] (fold ' + str(foldIdx) + ') ' + str(acc * 100) + '% accuracy'
+
+    predictions = np.array(rawPredictions)
+    accuracies = np.array(rawAccuracies)
+    print '[test#testTree] ' + str(np.average(accuracies) * 100) + '% average accuracy'
+    print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
 
 def main():
   # tday.plainScores.convertMxlComposer(
-  #   tday.mxlScores.getComposerPaths('Brahms, Johannes')
+  #   tday.mxlScores.getComposerPaths('Albeniz, Isaac')
   # )
   # return
 
-  # composers = ['bach', 'oneills1850']
-  composers = ['Bach, Johann Sebastian', 'Beethoven, Ludwig van', 'Brahms, Johannes']
-  [allScores, allLabels] = getComposerData(composers)
-  allScores = allScores[:-1]
-  allLabels = allLabels[:-1]
-  testTree(allScores, allLabels, nrSlices=15, classNames=composers, maxDepth=1)
+  composers = [
+    'bach',
+    # 'oneills1850',
+    'trecento',
+  ]
+  # composers = [
+    # 'Bach, Johann Sebastian',
+    # 'Beethoven, Ludwig van',
+    # 'Brahms, Johannes',
+    # 'Alsen, Wulf Dieter',
+    # 'Blindow, Karl-Gottfried',
+    # 'Albeniz, Isaac',
+  # ]
+  # [allScores, allLabels] = getComposerData(composers)
+  [allScores, allLabels] = getCorpusComposerData(composers)
+  # allScores = allScores[:-1]
+  # allLabels = allLabels[:-1]
+  print '[main] ' + str(len(allScores)) + ' scores'
+  testTree(allScores, allLabels, nrSlices=10, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()

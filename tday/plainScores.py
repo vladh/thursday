@@ -166,6 +166,32 @@ def writeComposerScore(plainScore, composer, name):
   path = join(tday.config.paths['plainComposerRoot'], composer, name)
   writeScore(plainScore, path)
 
+def getGenericFrequencies(score, prop):
+  """
+  Calculates the frequency of a certain property in the given score's notes.
+
+  @param intervals {plainScore}
+  @return {Dict}
+  """
+  nrSamples = 0.0
+  intervals = []
+  for measure in score['measures']:
+    for note in measure['notes']:
+      intervals.append(note[prop])
+      nrSamples += 1
+  freq = Counter(intervals)
+  freq = {k: v / nrSamples for k, v in freq.items()}
+  return freq
+
+def getDurationFrequencies(score):
+  """
+  Calculates the frequency of duration in the given score's notes.
+
+  @param intervals {plainScore}
+  @return {Dict}
+  """
+  return getGenericFrequencies(score, 'duration')
+
 def getKeyIntervalFrequencies(score):
   """
   Calculates the frequency of keyInterval in the given score's notes.
@@ -173,15 +199,7 @@ def getKeyIntervalFrequencies(score):
   @param intervals {plainScore}
   @return {Dict}
   """
-  nrIntervals = 0.0
-  intervals = []
-  for measure in score['measures']:
-    for note in measure['notes']:
-      intervals.append(note['keyInterval'])
-      nrIntervals += 1
-  freq = Counter(intervals)
-  freq = {k: v / nrIntervals for k, v in freq.items()}
-  return freq
+  return getGenericFrequencies(score, 'keyInterval')
 
 def convertMxlCorpus(paths):
   for path in paths:
