@@ -17,6 +17,17 @@ def getCorpusComposerData(composers):
     allLabels += ([scoreSet[0]] * len(scoreSet[1]))
   return [allScores, allLabels]
 
+def getComposerData(composers):
+  allScoreSets = []
+  for composer in composers:
+    allScoreSets.append([composer, tday.plainScores.getComposerPaths(composer)])
+  allScores = []
+  allLabels = []
+  for scoreSet in allScoreSets:
+    allScores += tday.plainScores.loadScores(scoreSet[1])
+    allLabels += ([scoreSet[0]] * len(scoreSet[1]))
+  return [allScores, allLabels]
+
 def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
@@ -49,11 +60,17 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
 
 def main():
-  # tday.plainScores.convertMxlCorpus(tday.mxlScores.getCorpusComposerPaths('oneills1850'))
+  # tday.plainScores.convertMxlComposer(
+  #   tday.mxlScores.getComposerPaths('Brahms, Johannes')
+  # )
+  # return
 
-  composers = ['bach', 'trecento']
-  [allScores, allLabels] = getCorpusComposerData(composers)
-  testTree(allScores, allLabels, nrSlices=11, classNames=composers, maxDepth=1)
+  # composers = ['bach', 'oneills1850']
+  composers = ['Bach, Johann Sebastian', 'Beethoven, Ludwig van', 'Brahms, Johannes']
+  [allScores, allLabels] = getComposerData(composers)
+  allScores = allScores[:-1]
+  allLabels = allLabels[:-1]
+  testTree(allScores, allLabels, nrSlices=15, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()

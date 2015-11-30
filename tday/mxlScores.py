@@ -24,11 +24,20 @@ def getComposerPaths(composer):
 def loadScores(paths):
   """
   Loads an array of paths and returns their associated scores.
+  May return fewer scores than paths if there are errors.
 
   @param paths {List<str>}
   @return {List<music21.score.Score}>
   """
-  scores = [music21.converter.parse(path) for path in paths]
+  scores = []
+  for path in paths:
+    try:
+      score = music21.converter.parse(path)
+      scores.append(score)
+    except Exception as e:
+      print '[mxlScores#loadScores] Could not parse score ' + path
+      print '[mxlScores#loadScores] ' + str(e)
+      pass
   return scores
 
 def getCorpusComposerPaths(composer, limit=None):
