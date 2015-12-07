@@ -23,7 +23,7 @@ def getCorpusComposerData(composers):
 def getComposerData(composers):
   allScoreSets = []
   for composer in composers:
-    composerScores = tday.plainScores.getComposerPaths(composer)[0:50]
+    composerScores = tday.plainScores.getComposerPaths(composer)[0:10]
     allScoreSets.append([composer, composerScores])
   allScores = []
   allLabels = []
@@ -36,16 +36,16 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
   [allScores, allLabels] = tday.util.unisonShuffle(allScores, allLabels)
-  rawPredictions = []
-  rawAccuracies = []
 
   featureExtractors = [
-    # ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
-    # ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
+    ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
+    ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
     ['random', tday.plainFeatures.makeRandomFeature],
   ]
 
   for featureExtractor in featureExtractors:
+    rawPredictions = []
+    rawAccuracies = []
     print '[test#testTree] Using feature extractor: ' + featureExtractor[0]
     for foldIdx in xrange(nrSlices):
       [trainScores, testScores] = tday.util.crossfold(allScores, nrSlices, foldIdx)
@@ -53,8 +53,6 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
 
       trainSamples = np.array([featureExtractor[1](score) for score in trainScores])
       testSamples = np.array([featureExtractor[1](score) for score in testScores])
-      if verbose:
-        print np.hstack(trainSamples)
 
       [pred, acc] = tday.learning.testTree(
         trainSamples, trainLabels, testSamples, testLabels,
@@ -66,9 +64,6 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
 
     predictions = np.array(rawPredictions)
     accuracies = np.array(rawAccuracies)
-    if verbose:
-      print rawAccuracies
-      print np.average(accuracies)
     print '[test#testTree] ' + str(np.average(accuracies) * 100) + '% average accuracy'
     print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
 
@@ -79,19 +74,20 @@ def main():
   # return
 
   composers = [
-    # 'bach',
+    'bach',
     # 'oneills1850',
-    # 'trecento',
+    'trecento',
 
-    'Bach, Johann Sebastian',
+    # 'Bach, Johann Sebastian',
     # 'Beethoven, Ludwig van',
-    'Brahms, Johannes',
+    # 'Brahms, Johannes',
     # 'Alsen, Wulf Dieter',
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
   ]
-  [allScores, allLabels] = getComposerData(composers)
-  # [allScores, allLabels] = getCorpusComposerData(composers)
+  # [allScores, allLabels] = getComposerData(composers)
+  [allScores, allLabels] = getCorpusComposerData(composers)
+  print allLabels
 
   print '[main] ' + str(len(allScores)) + ' scores'
   testTree(allScores, allLabels, nrSlices=5, classNames=composers, maxDepth=1)
