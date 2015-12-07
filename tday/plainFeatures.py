@@ -18,11 +18,7 @@ def makeRandomFeature(score):
   @returns {List[numpy.array, music21.key, Dict]}
   """
   sample = [
-    random.randint(1,10000),
-    random.randint(1,10000),
-    random.randint(1,10000),
-    random.randint(1,10000),
-    random.randint(1,10000)
+    1.0 - random.random(),
   ]
   return sample
 

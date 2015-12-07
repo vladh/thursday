@@ -6,11 +6,13 @@ import tday.learning
 
 import numpy as np
 
+verbose = False
+
 def getCorpusComposerData(composers):
   allScoreSets = []
   for composer in composers:
-    allScoreSets.append([composer, tday.plainScores.getCorpusComposerPaths(composer)[0:90]])
-  print allScoreSets
+    composerScores = tday.plainScores.getCorpusComposerPaths(composer)[0:10]
+    allScoreSets.append([composer, composerScores])
   allScores = []
   allLabels = []
   for scoreSet in allScoreSets:
@@ -21,7 +23,8 @@ def getCorpusComposerData(composers):
 def getComposerData(composers):
   allScoreSets = []
   for composer in composers:
-    allScoreSets.append([composer, tday.plainScores.getComposerPaths(composer)])
+    composerScores = tday.plainScores.getComposerPaths(composer)[0:50]
+    allScoreSets.append([composer, composerScores])
   allScores = []
   allLabels = []
   for scoreSet in allScoreSets:
@@ -37,8 +40,8 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   rawAccuracies = []
 
   featureExtractors = [
-    ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
-    ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
+    # ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
+    # ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
     ['random', tday.plainFeatures.makeRandomFeature],
   ]
 
@@ -50,18 +53,22 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
 
       trainSamples = np.array([featureExtractor[1](score) for score in trainScores])
       testSamples = np.array([featureExtractor[1](score) for score in testScores])
-      # print trainSamples
+      if verbose:
+        print np.hstack(trainSamples)
 
       [pred, acc] = tday.learning.testTree(
         trainSamples, trainLabels, testSamples, testLabels,
-        classNames=classNames, maxDepth=maxDepth
+        classNames=classNames, maxDepth=maxDepth, verbose=verbose
       )
       rawPredictions.append(pred)
       rawAccuracies.append(acc)
-      # print '[test#testTree] (fold ' + str(foldIdx) + ') ' + str(acc * 100) + '% accuracy'
+      print '[test#testTree] (fold ' + str(foldIdx) + ') ' + str(acc * 100) + '% accuracy'
 
     predictions = np.array(rawPredictions)
     accuracies = np.array(rawAccuracies)
+    if verbose:
+      print rawAccuracies
+      print np.average(accuracies)
     print '[test#testTree] ' + str(np.average(accuracies) * 100) + '% average accuracy'
     print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
 
@@ -72,24 +79,22 @@ def main():
   # return
 
   composers = [
-    'bach',
+    # 'bach',
     # 'oneills1850',
-    'trecento',
-  ]
-  # composers = [
-    # 'Bach, Johann Sebastian',
+    # 'trecento',
+
+    'Bach, Johann Sebastian',
     # 'Beethoven, Ludwig van',
-    # 'Brahms, Johannes',
+    'Brahms, Johannes',
     # 'Alsen, Wulf Dieter',
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
-  # ]
-  # [allScores, allLabels] = getComposerData(composers)
-  [allScores, allLabels] = getCorpusComposerData(composers)
-  # allScores = allScores[:-1]
-  # allLabels = allLabels[:-1]
+  ]
+  [allScores, allLabels] = getComposerData(composers)
+  # [allScores, allLabels] = getCorpusComposerData(composers)
+
   print '[main] ' + str(len(allScores)) + ' scores'
-  testTree(allScores, allLabels, nrSlices=10, classNames=composers, maxDepth=1)
+  testTree(allScores, allLabels, nrSlices=5, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()
