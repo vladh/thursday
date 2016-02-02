@@ -5,6 +5,7 @@ import tday.plainFeatures
 import tday.learning
 
 import numpy as np
+import sklearn.metrics as metrics
 
 verbose = False
 
@@ -58,14 +59,28 @@ def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
         trainSamples, trainLabels, testSamples, testLabels,
         classNames=classNames, maxDepth=maxDepth, verbose=verbose
       )
-      rawPredictions.append(pred)
+      rawPredictions.extend(pred)
       rawAccuracies.append(acc)
       print '[test#testTree] (fold ' + str(foldIdx) + ') ' + str(acc * 100) + '% accuracy'
 
     predictions = np.array(rawPredictions)
     accuracies = np.array(rawAccuracies)
-    print '[test#testTree] ' + str(np.average(accuracies) * 100) + '% average accuracy'
-    print '[test#testTree] ' + str(np.std(accuracies) * 100) + ' standard deviation'
+
+    metricsAccuracy = metrics.accuracy_score(allLabels, predictions)
+    metricsStd = np.std(accuracies)
+    metricsReport = metrics.classification_report(allLabels, predictions).rstrip()
+    metricsConfusion = metrics.confusion_matrix(allLabels, predictions)
+
+    metricsString = ''
+    metricsString += '# average accuracy: ' + str(metricsAccuracy) + '\n'
+    metricsString += '# fold accuracy standard deviation: ' + str(metricsStd) + '\n'
+    metricsString += '# confusion matrix\n'
+    metricsString += str(metricsConfusion) + '\n'
+    metricsString += '# classification report\n'
+    metricsString += str(metricsReport) + '\n'
+
+    print '[test#testTree] classification metrics'
+    print '  ' + '  '.join(metricsString.splitlines(True))
 
 def main():
   # tday.plainScores.convertMxlComposer(
@@ -85,9 +100,8 @@ def main():
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
   ]
-  # [allScores, allLabels] = getComposerData(composers)
   [allScores, allLabels] = getCorpusComposerData(composers)
-  print allLabels
+  # [allScores, allLabels] = getComposerData(composers)
 
   print '[main] ' + str(len(allScores)) + ' scores'
   testTree(allScores, allLabels, nrSlices=5, classNames=composers, maxDepth=1)
