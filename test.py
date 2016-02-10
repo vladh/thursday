@@ -9,30 +9,6 @@ import sklearn.metrics as metrics
 
 verbose = False
 
-def getCorpusComposerData(composers):
-  allScoreSets = []
-  for composer in composers:
-    composerScores = tday.plainScores.getCorpusComposerPaths(composer)[0:10]
-    allScoreSets.append([composer, composerScores])
-  allScores = []
-  allLabels = []
-  for scoreSet in allScoreSets:
-    allScores += tday.plainScores.loadScores(scoreSet[1])
-    allLabels += ([scoreSet[0]] * len(scoreSet[1]))
-  return [allScores, allLabels]
-
-def getComposerData(composers):
-  allScoreSets = []
-  for composer in composers:
-    composerScores = tday.plainScores.getComposerPaths(composer)[0:10]
-    allScoreSets.append([composer, composerScores])
-  allScores = []
-  allLabels = []
-  for scoreSet in allScoreSets:
-    allScores += tday.plainScores.loadScores(scoreSet[1])
-    allLabels += ([scoreSet[0]] * len(scoreSet[1]))
-  return [allScores, allLabels]
-
 def testTree(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None):
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
@@ -100,11 +76,13 @@ def main():
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
   ]
-  [allScores, allLabels] = getCorpusComposerData(composers)
-  # [allScores, allLabels] = getComposerData(composers)
-
+  [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers, limit=5)
+  # [allScores, allLabels] = tday.plainScores.getComposerData(composers)
   print '[main] ' + str(len(allScores)) + ' scores'
-  testTree(allScores, allLabels, nrSlices=5, classNames=composers, maxDepth=1)
+
+  mergedScore = tday.plainScores.mergeScores(allScores)
+  print len(mergedScore['measures'])
+  # testTree(allScores, allLabels, nrSlices=22, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()
