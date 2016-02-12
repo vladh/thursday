@@ -82,6 +82,11 @@ def main():
 
   mergedScore = tday.plainScores.mergeScores(allScores)
   print len(mergedScore['measures'])
+
+  splitScores = tday.plainScores.splitScore(mergedScore, 50)
+  for score in splitScores:
+    print len(score['measures'])
+
   # testTree(allScores, allLabels, nrSlices=22, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':

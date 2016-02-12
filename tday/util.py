@@ -18,6 +18,13 @@ def printTable(heading, info):
   print
   print
 
+def chunk(l, n):
+  """
+  Yields successive n-sized chunks from l.
+  """
+  for i in xrange(0, len(l), n):
+    yield l[i:i+n]
+
 def unisonShuffle(a, b):
   if not len(a) == len(b):
     raise ValueError('a and b must have the same length')

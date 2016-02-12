@@ -234,14 +234,22 @@ def mergeScores(scores):
 
   return mergedScore
 
-def splitScore(score, n):
+def splitScore(mergedScore, n):
   """
   Splits a score's measures into n parts, returning n scores.
 
-  @param score {Dict}
+  @param mergedScore {Dict}
   @param n {int}
   @return {List<Dict>}
   """
+  measureChunks = list(tday.util.chunk(mergedScore['measures'], n))
+  scores = [None] * len(measureChunks)
+  for idx, measures in enumerate(measureChunks):
+    scores[idx] = {
+      'name': mergedScore['name'] + ' (chunk ' + str(idx) + '/' + str(len(mergedScore['measures'])) + ')',
+      'measures': measures
+    }
+  return scores
 
 #
 # CONVERSION
