@@ -65,29 +65,32 @@ def main():
   # return
 
   composers = [
-    'bach',
+    # 'bach',
     # 'oneills1850',
-    'trecento',
+    # 'trecento',
 
-    # 'Bach, Johann Sebastian',
-    # 'Beethoven, Ludwig van',
+    'Bach, Johann Sebastian',
+    'Beethoven, Ludwig van',
     # 'Brahms, Johannes',
     # 'Alsen, Wulf Dieter',
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
   ]
-  [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers, limit=5)
+  # [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers, splits=20)
+  # [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers, limit=10)
+  # [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers)
+  [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=20)
+  # [allScores, allLabels] = tday.plainScores.getComposerData(composers, limit=7)
   # [allScores, allLabels] = tday.plainScores.getComposerData(composers)
+
   print '[main] ' + str(len(allScores)) + ' scores'
 
-  mergedScore = tday.plainScores.mergeScores(allScores)
-  print len(mergedScore['measures'])
+  # for score in allScores:
+  #   print score['name']
+  #   print len(score['measures'])
+  #   print
 
-  splitScores = tday.plainScores.splitScore(mergedScore, 50)
-  for score in splitScores:
-    print len(score['measures'])
-
-  # testTree(allScores, allLabels, nrSlices=22, classNames=composers, maxDepth=1)
+  testTree(allScores, allLabels, nrSlices=2, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()

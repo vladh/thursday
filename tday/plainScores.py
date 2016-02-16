@@ -142,41 +142,51 @@ def getComposerPaths(composer, limit=None):
 def getCorpusComposerPaths(composer, limit=None):
   return getPaths(tday.config.paths['plainCorpusRoot'], composer, limit)
 
-def getCorpusComposerData(composers, limit=None):
+def getCorpusComposerData(composers, limit=None, splits=None):
   """
   Gets scores and labels for a given set of composers, from the corpus.
 
   @param composers {List}
   @param limit {int} Optional per-composer score limit
+  @param splits {int} If given, will do split and merge on scores with this
+    many splits
   @return {List<List, List>}
   """
   allScoreSets = []
   for composer in composers:
-    composerScores = getCorpusComposerPaths(composer, limit)
+    composerScores = loadScores(getCorpusComposerPaths(composer, limit))
+    if splits != None:
+      mergedComposerScore = tday.plainScores.mergeScores(composerScores)
+      composerScores = tday.plainScores.splitScore(mergedComposerScore, splits)
     allScoreSets.append([composer, composerScores])
   allScores = []
   allLabels = []
   for scoreSet in allScoreSets:
-    allScores += loadScores(scoreSet[1])
+    allScores += scoreSet[1]
     allLabels += ([scoreSet[0]] * len(scoreSet[1]))
   return [allScores, allLabels]
 
-def getComposerData(composers, limit=None):
+def getComposerData(composers, limit=None, splits=None):
   """
   Gets scores and labels for a given set of composers, from our data.
 
   @param composers {List}
   @param limit {int} Optional per-composer score limit
+  @param splits {int} If given, will do split and merge on scores with this
+    many splits
   @return {List<List, List>}
   """
   allScoreSets = []
   for composer in composers:
-    composerScores = getComposerPaths(composer, limit)
+    composerScores = loadScores(getComposerPaths(composer, limit))
+    if splits != None:
+      mergedComposerScore = tday.plainScores.mergeScores(composerScores)
+      composerScores = tday.plainScores.splitScore(mergedComposerScore, splits)
     allScoreSets.append([composer, composerScores])
   allScores = []
   allLabels = []
   for scoreSet in allScoreSets:
-    allScores += loadScores(scoreSet[1])
+    allScores += scoreSet[1]
     allLabels += ([scoreSet[0]] * len(scoreSet[1]))
   return [allScores, allLabels]
 
@@ -246,7 +256,7 @@ def splitScore(mergedScore, n):
   scores = [None] * len(measureChunks)
   for idx, measures in enumerate(measureChunks):
     scores[idx] = {
-      'name': mergedScore['name'] + ' (chunk ' + str(idx) + '/' + str(len(mergedScore['measures'])) + ')',
+      'name': mergedScore['name'] + ' (chunk ' + str(idx) + '/' + str(len(measureChunks) - 1) + ')',
       'measures': measures
     }
   return scores

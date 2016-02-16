@@ -18,12 +18,21 @@ def printTable(heading, info):
   print
   print
 
-def chunk(l, n):
+def chunkWithSize(l, n):
   """
   Yields successive n-sized chunks from l.
   """
   for i in xrange(0, len(l), n):
     yield l[i:i+n]
+
+def chunk(l, n):
+  """
+  Yield n successive chunks from l.
+  """
+  newn = int(len(l) / n)
+  for i in xrange(0, n-1):
+    yield l[i*newn:i*newn+newn]
+  yield l[n*newn-newn:]
 
 def unisonShuffle(a, b):
   if not len(a) == len(b):
