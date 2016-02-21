@@ -36,8 +36,7 @@ import yaml
 import cPickle as pickle
 from collections import Counter
 from os import mkdir, listdir
-from os.path import basename, dirname, exists, isfile, splitext
-from os.path import isfile, join
+from os.path import basename, dirname, exists, isfile, splitext, join
 
 if tday.config.fileFormat == 'pickle':
   fileExt = '.pickle'
@@ -48,15 +47,15 @@ elif tday.config.fileFormat == 'yaml':
 # ANALYSIS
 #
 
-"""
-Gets a measure's key from the key signature, or by analysis if that doesn't
-work. If we can't get it by analysis either, default to C major, since there
-is probably no key anyway (e.g. no notes).
-
-@param measure {music21.stream.Measure}
-@return {music21.key.Key}
-"""
 def getKeyFromMeasure(measure):
+  """
+  Gets a measure's key from the key signature, or by analysis if that doesn't
+  work. If we can't get it by analysis either, default to C major, since there
+  is probably no key anyway (e.g. no notes).
+
+  @param measure {music21.stream.Measure}
+  @return {music21.key.Key}
+  """
   keySignatures = measure.flat.getKeySignatures()
   if len(keySignatures) > 0:
     key = tday.mxlScores.keyFromKeySignature(keySignatures[0])
@@ -233,12 +232,12 @@ def mergeScores(scores):
     'measures': []
   }
 
-  def mergeScores(mergedScore, score):
+  def reduceScores(mergedScore, score):
     mergedScore['name'] += score['name'] + ' + '
     mergedScore['measures'] += score['measures']
     return mergedScore
 
-  mergedScore = reduce(mergeScores, scores, emptyScore)
+  mergedScore = reduce(reduceScores, scores, emptyScore)
   if mergedScore['name'][-3:] == ' + ':
     mergedScore['name'] = mergedScore['name'][:-3]
 
@@ -266,6 +265,12 @@ def splitScore(mergedScore, n):
 #
 
 def fromMxl(score, name='Unknown'):
+  """
+  Converts an MXL score to a plain score.
+
+  @param score {music21.score.Score, music21.stream.Opus}
+  @return {plainScore}
+  """
   if isinstance(score, music21.stream.Opus):
     print '[plainScores#fromMxl] WARNING: Merging Opus'
     score = score.mergeScores()
@@ -310,6 +315,11 @@ def fromMxl(score, name='Unknown'):
   return plainScore
 
 def convertMxlCorpus(paths):
+  """
+  Converts a series of MXL corpus scores to plain scores.
+
+  @param paths {List<str>}
+  """
   for path in paths:
     score = tday.mxlScores.loadCorpusScores([path])[0]
     composer = basename(dirname(path))
@@ -318,6 +328,11 @@ def convertMxlCorpus(paths):
     writeCorpusScore(plainScore, composer, name)
 
 def convertMxlComposer(paths):
+  """
+  Converts a series of MXL composer scores to plain scores.
+
+  @param paths {List<str>}
+  """
   for path in paths:
     print '[plainScores#convertMxlComposer] Converting ' + path
     scores = tday.mxlScores.loadScores([path])
