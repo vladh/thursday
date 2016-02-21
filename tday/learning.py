@@ -1,8 +1,5 @@
 import tday.util
 import tday.config
-import tday.music
-import tday.scores
-import tday.features
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
