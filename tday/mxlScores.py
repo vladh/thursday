@@ -72,28 +72,3 @@ def keyFromKeySignature(keySignature):
   # HACK: This always outputs the major key. Figure out how to get major/minor.
   key = music21.key.Key(music21.key.sharpsToPitch(keySignature.sharps))
   return key
-
-def makeNotesIntoTonicIntervals(notes, tonic):
-  """
-  Converts notes into their interval from the given tonic.
-  If the notes are "C, D, E" and the tonic is "C", this will give "P1, M2, M3".
-
-  @param notes {List[music21.note]}
-  @param tonic {music21.note}
-  @return {List[music21.interval]}
-  """
-  # NOTE: Takes ~0.1s for 500 notes, ~1.5s for 5500 notes
-  return [music21.interval.Interval(note, tonic) for note in notes]
-
-def getIntervalFrequencies(intervals):
-  """
-  Calculates the frequency of intervals in the given list of intervals.
-
-  @param intervals {List[music21.interval]}
-  @return {Dict}
-  """
-  nrIntervals = float(len(intervals))
-  intervalNames = map(lambda(d): d.name, intervals)
-  freq = Counter(intervalNames)
-  freq = {k: v / nrIntervals for k, v in freq.items()}
-  return freq

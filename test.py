@@ -70,8 +70,8 @@ def main():
     # 'trecento',
 
     'Bach, Johann Sebastian',
-    'Beethoven, Ludwig van',
-    # 'Brahms, Johannes',
+    # 'Beethoven, Ludwig van',
+    'Brahms, Johannes',
     # 'Alsen, Wulf Dieter',
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
@@ -79,18 +79,13 @@ def main():
   # [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers, splits=20)
   # [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers, limit=10)
   # [allScores, allLabels] = tday.plainScores.getCorpusComposerData(composers)
-  [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=20)
+  [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=10)
   # [allScores, allLabels] = tday.plainScores.getComposerData(composers, limit=7)
   # [allScores, allLabels] = tday.plainScores.getComposerData(composers)
 
   print '[main] ' + str(len(allScores)) + ' scores'
 
-  # for score in allScores:
-  #   print score['name']
-  #   print len(score['measures'])
-  #   print
-
-  testTree(allScores, allLabels, nrSlices=2, classNames=composers, maxDepth=1)
+  testTree(allScores, allLabels, nrSlices=10, classNames=composers, maxDepth=1)
 
 if __name__ == '__main__':
   main()
