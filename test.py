@@ -9,6 +9,10 @@ def convert():
   )
 
 def classify():
+  nrSplits = 10
+  nrSlices = 10
+  maxDepth = 1
+
   composers = [
     # 'bach',
     # 'oneills1850',
@@ -25,12 +29,11 @@ def classify():
     # 'Albeniz, Isaac',
   ]
 
-  [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=10)
-
+  [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=nrSplits)
   print '[test#classify] ' + str(len(allScores)) + ' scores'
-
   tday.learning.testFeatures(
-    allScores, allLabels, nrSlices=10, classNames=composers, maxDepth=1, verbose=False
+    allScores, allLabels, nrSlices=nrSlices, classNames=composers,
+    maxDepth=maxDepth, verbose=False
   )
 
 def transform():
