@@ -5,7 +5,7 @@ import tday.learning
 
 def convert():
   tday.plainScores.convertMxlComposer(
-    tday.mxlScores.getComposerPaths('Albeniz, Isaac')
+    tday.mxlScores.getComposerPaths('Hofstadter, Douglas')
   )
 
 def classify():
@@ -16,7 +16,10 @@ def classify():
 
     'Bach, Johann Sebastian',
     # 'Beethoven, Ludwig van',
-    'Brahms, Johannes',
+    # 'Brahms, Johannes',
+    # 'Chopin, Frederic',
+    'Debussy, Claude',
+
     # 'Alsen, Wulf Dieter',
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
