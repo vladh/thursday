@@ -27,11 +27,11 @@ def classify():
 
   [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=10)
 
+  print '[test#classify] ' + str(len(allScores)) + ' scores'
+
   tday.learning.testFeatures(
     allScores, allLabels, nrSlices=10, classNames=composers, maxDepth=1, verbose=False
   )
-
-  print '[test#classify] ' + str(len(allScores)) + ' scores'
 
 def transform():
   score.show('text')
