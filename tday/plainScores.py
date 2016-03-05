@@ -179,6 +179,8 @@ def getComposerData(composers, limit=None, splits=None):
   for composer in composers:
     composerScores = loadScores(getComposerPaths(composer, limit))
     if splits != None:
+      print '[plainScores#getComposerData] Splitting ' + \
+        str(len(composerScores)) + ' scores into ' + str(splits)
       mergedComposerScore = tday.plainScores.mergeScores(composerScores)
       composerScores = tday.plainScores.splitScore(mergedComposerScore, splits)
     allScoreSets.append([composer, composerScores])

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import tday.util
 import tday.mxlScores
 import tday.plainScores
@@ -11,7 +13,7 @@ def convert():
 def classify():
   nrSplits = 10
   nrSlices = 10
-  maxDepth = 1
+  maxDepth = 8
 
   composers = [
     # 'bach',
@@ -21,8 +23,9 @@ def classify():
     'Bach, Johann Sebastian',
     # 'Beethoven, Ludwig van',
     # 'Brahms, Johannes',
-    # 'Chopin, Frederic',
+    'Chopin, Frederic',
     'Debussy, Claude',
+    # 'Fauré, Gabriel',
 
     # 'Alsen, Wulf Dieter',
     # 'Blindow, Karl-Gottfried',
