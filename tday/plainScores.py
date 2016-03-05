@@ -47,33 +47,6 @@ elif tday.config.fileFormat == 'yaml':
 # ANALYSIS
 #
 
-def getKeyFromMeasure(measure):
-  """
-  Gets a measure's key from the key signature, or by analysis if that doesn't
-  work. If we can't get it by analysis either, default to C major, since there
-  is probably no key anyway (e.g. no notes).
-
-  @param measure {music21.stream.Measure}
-  @return {music21.key.Key}
-  """
-  keySignatures = measure.flat.getKeySignatures()
-  if len(keySignatures) > 0:
-    key = tday.mxlScores.keyFromKeySignature(keySignatures[0])
-  else:
-    print "" + \
-      "[plainScores#getKeyFromMeasure] Could not get key for measure, using " + \
-      "analysis to determine it"
-    print measure.show('text')
-    try:
-      key = measure.analyze('key')
-    except Exception:
-      print "" + \
-        "[plainScores#getKeyFromMeasure] Could not get key by analysis. " + \
-        "Defaulting to C major. There probably *is* no key at all (no " + \
-        "notes?)."
-      key = music21.key.Key('C')
-  return key
-
 def getGenericFrequencies(score, prop):
   """
   Calculates the frequency of a certain property in the given score's notes.
@@ -289,16 +262,11 @@ def fromMxl(score, name='Unknown'):
         'timeSignature': timeSig.ratioString,
         'notes': []
       }
-      key = getKeyFromMeasure(measure)
+      key = tday.mxlScores.getKeyFromMeasure(measure)
       plainMeasure['key'] = key.tonicPitchNameWithCase
       for generalNote in measure.flat.notes:
         if isinstance(generalNote, music21.chord.Chord):
-          notes = []
-          for pitch in generalNote.pitches:
-            note = music21.note.Note(pitch)
-            note.offset = generalNote.offset
-            note.duration = generalNote.duration
-            notes.append(note)
+          notes = music21.mxlScores.getNotesFromChord(generalNote)
         elif isinstance(generalNote, music21.note.Note):
           notes = [generalNote]
         for note in notes:
