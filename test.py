@@ -43,7 +43,7 @@ def classify():
 
 def doTransform(score, srcSt, dstSt):
   """
-  Transforms a score, converting intervals of `srcSt` semitones to `dstSt` semitones.
+  Transforms a score, converting degrees of `srcSt` semitones to `dstSt` semitones.
 
   @param score {music21.score.Score, music21.stream.Opus}
   @param srcSt {int}
@@ -68,10 +68,10 @@ def doTransform(score, srcSt, dstSt):
         for note in notes:
           interval = music21.interval.Interval(note.pitch, key.getTonic())
           if (interval.cents / 100) == srcSt:
-            newNote = note.transpose(srcSt - dstSt)
+            newNote = note.transpose(srcSt - (0 - dstSt))
             newInterval = music21.interval.Interval(newNote.pitch, key.getTonic())
             print '[doTransform] ' + note.name + ' (' + interval.name + ') -> ' + newNote.name + ' (' + newInterval.name + ')'
-            note = newNote
+            note.pitch = newNote.pitch
 
   return score
 
@@ -79,8 +79,14 @@ def transform():
   score = tday.mxlScores.loadScores(
     tday.mxlScores.getComposerPaths('Bach, Johann Sebastian', limit=1)
   )[0]
-  score = doTransform(score, 7, 1)
   score.show('text')
+  score = doTransform(score, 4, -2)
+  score = doTransform(score, 5, -2)
+  score = doTransform(score, 6, -2)
+  score = doTransform(score, 7, -2)
+  score = doTransform(score, 8, -2)
+  score.show('text')
+  print score.write('xml', '/Users/vladh/Desktop/terrible-bach.xml')
 
 def main():
   # convert()
