@@ -3,7 +3,7 @@ paths = {
   'mxlVariousRoot': '../data/mxl/various/',
   'plainCorpusRoot': '../data/plain/corpus/',
   'plainComposerRoot': '../data/plain/composer/',
-  'learning': '../data/learning/'
+  'learning-dot': '../data/learning/dot/'
 }
 # 'yaml' or 'pickle'
 fileFormat = 'pickle'

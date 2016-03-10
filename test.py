@@ -17,7 +17,7 @@ def convert():
   )
 
 def classify():
-  nrSplits = 40
+  nrSplits = 60
   nrSlices = 10
   maxDepth = 50
   composers = [
@@ -50,6 +50,7 @@ def classify():
     allScores, allLabels, featureExtractors,
     nrSlices=nrSlices, classNames=composers, maxDepth=maxDepth, verbose=False
   )
+  tday.learning.averageFeatures(allScores, allLabels, featureExtractors)
 
 def transform():
   score = tday.mxlScores.loadScores(
@@ -57,8 +58,7 @@ def transform():
   )[0]
   score.show('text')
 
-  score = tday.transform.transformPitches(score, 6, 14)
-  score = tday.transform.transformPitches(score, 6, 18)
+  score = tday.transform.transformPitches(score, 24, 20)
 
   score.show('text')
   print score.write('xml', '/Users/vladh/Desktop/bach-debussy.xml')

@@ -36,7 +36,9 @@ def treeClassify(trainSamples, trainLabels, testSamples, testLabels, classNames=
 
   acc = (testLabels == pred).sum() / float(len(testLabels))
 
-  graphvizPath = os.path.join(tday.config.paths['learning'], 'tree-' + str(time.time()) + '.dot')
+  graphvizPath = os.path.join(
+    tday.config.paths['learning-dot'], 'tree-' + str(time.time()) + '.dot'
+  )
 
   with open(graphvizPath, 'w') as fp:
     tree.export_graphviz(
@@ -52,7 +54,7 @@ def testFeatures(
 ):
   """
   Runs a decision tree classifier with various feature extractors on folds
-  of the given data.
+  of the given data. Prints the results.
 
   @param allScores {np.array}
   @param allLabels {np.array}
@@ -107,3 +109,36 @@ def testFeatures(
 
     print '[learning#testFeatures] classification metrics'
     print '  ' + '  '.join(metricsString.splitlines(True))
+
+def averageFeatures(allScores, allLabels, featureExtractors):
+  """
+  Prints some information on the distribution of samples.
+
+  @param allScores {np.array}
+  @param allLabels {np.array}
+  @param featureExtractors {List<List<str, function>>} A list of pairs of
+    extractor name and extractor function (e.g. from tday.plainFeatures).
+  """
+  allScores = np.array(allScores)
+  allLabels = np.array(allLabels)
+  labels = list(set(allLabels))
+
+  for featureExtractor in featureExtractors:
+    print '[learning#averageFeatures] Using feature extractor: ' + featureExtractor[0]
+
+    allSamples = np.array([featureExtractor[1](score) for score in allScores])
+
+    labelMeans = {}
+    for label in labels:
+      samples = allSamples[np.where(allLabels == label)[0]]
+      labelMeans[label] = np.mean(samples, axis=0)
+
+    meansDiff = labelMeans[labels[0]] - labelMeans[labels[1]]
+    meansDiffSorted = sorted(list(enumerate(meansDiff)), key=lambda d: d[1])
+
+    for label in labels:
+      print '[learning#averageFeatures] ' + label
+      print "\n".join(map(str, list(enumerate(labelMeans[label]))))
+    print '[learning#averageFeatures] ' + labels[0] + ' - ' + labels[1]
+    print "\n".join(map(str, meansDiffSorted))
+
