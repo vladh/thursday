@@ -1,3 +1,7 @@
+import tday.mxlScores
+
+import music21
+
 def transformPitches(score, srcSt, dstSt):
   """
   Transforms a score, converting degrees of `srcSt` semitones to `dstSt` semitones.
