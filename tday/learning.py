@@ -46,13 +46,18 @@ def treeClassify(trainSamples, trainLabels, testSamples, testLabels, classNames=
 
   return [pred, acc]
 
-def testFeatures(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=None, verbose=False):
+def testFeatures(
+  allScores, allLabels, featureExtractors,
+  nrSlices=1, classNames=None, maxDepth=None, verbose=False
+):
   """
   Runs a decision tree classifier with various feature extractors on folds
   of the given data.
 
   @param allScores {np.array}
   @param allLabels {np.array}
+  @param featureExtractors {List<List<str, function>>} A list of pairs of
+    extractor name and extractor function (e.g. from tday.plainFeatures).
   @param nrSlices {np.array} The number of split/merge slices
   @param classNames {List<str>}
   @param maxDepth {int}
@@ -61,12 +66,6 @@ def testFeatures(allScores, allLabels, nrSlices=1, classNames=None, maxDepth=Non
   allScores = np.array(allScores)
   allLabels = np.array(allLabels)
   [allScores, allLabels] = tday.util.unisonShuffle(allScores, allLabels)
-
-  featureExtractors = [
-    ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
-    ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
-    ['random', tday.plainFeatures.makeRandomFeature],
-  ]
 
   for featureExtractor in featureExtractors:
     print '[learning#testFeatures] Using feature extractor: ' + featureExtractor[0]

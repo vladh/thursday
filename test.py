@@ -4,19 +4,22 @@ import tday.util
 import tday.mxlScores
 import tday.plainScores
 import tday.learning
+import tday.transform
 
+import sys
 import music21
 
 def convert():
+  composer = 'Hofstadter, Douglas'
+
   tday.plainScores.convertMxlComposer(
-    tday.mxlScores.getComposerPaths('Hofstadter, Douglas')
+    tday.mxlScores.getComposerPaths(composer)
   )
 
 def classify():
-  nrSplits = 10
+  nrSplits = 40
   nrSlices = 10
-  maxDepth = 8
-
+  maxDepth = 50
   composers = [
     # 'bach',
     # 'oneills1850',
@@ -25,7 +28,7 @@ def classify():
     'Bach, Johann Sebastian',
     # 'Beethoven, Ludwig van',
     # 'Brahms, Johannes',
-    'Chopin, Frederic',
+    # 'Chopin, Frederic',
     'Debussy, Claude',
     # 'Fauré, Gabriel',
 
@@ -33,65 +36,46 @@ def classify():
     # 'Blindow, Karl-Gottfried',
     # 'Albeniz, Isaac',
   ]
+  featureExtractors = [
+    ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
+    # ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
+    # ['random', tday.plainFeatures.makeRandomFeature],
+  ]
 
-  [allScores, allLabels] = tday.plainScores.getComposerData(composers, splits=nrSplits)
+  [allScores, allLabels] = tday.plainScores.getComposerData(
+    composers, splits=nrSplits
+  )
   print '[test#classify] ' + str(len(allScores)) + ' scores'
   tday.learning.testFeatures(
-    allScores, allLabels, nrSlices=nrSlices, classNames=composers,
-    maxDepth=maxDepth, verbose=False
+    allScores, allLabels, featureExtractors,
+    nrSlices=nrSlices, classNames=composers, maxDepth=maxDepth, verbose=False
   )
-
-def doTransform(score, srcSt, dstSt):
-  """
-  Transforms a score, converting degrees of `srcSt` semitones to `dstSt` semitones.
-
-  @param score {music21.score.Score, music21.stream.Opus}
-  @param srcSt {int}
-  @param dstSt {int}
-  @return {music21.score.Score}
-  """
-  print '[doTransform] Transforming from ' + music21.interval.Interval(srcSt).name + ' to ' + music21.interval.Interval(dstSt).name
-
-  if isinstance(score, music21.stream.Opus):
-    print '[doTransform] WARNING: Merging Opus'
-    score = score.mergeScores()
-
-  for part in score.parts:
-    for measure in part.getElementsByClass('Measure'):
-      timeSig = measure.getTimeSignatures()[0]
-      key = tday.mxlScores.getKeyFromMeasure(measure)
-      for generalNote in measure.flat.notes:
-        if isinstance(generalNote, music21.chord.Chord):
-          notes = tday.mxlScores.getNotesFromChord(generalNote)
-        elif isinstance(generalNote, music21.note.Note):
-          notes = [generalNote]
-        for note in notes:
-          interval = music21.interval.Interval(note.pitch, key.getTonic())
-          if (interval.cents / 100) == srcSt:
-            newNote = note.transpose(srcSt - (0 - dstSt))
-            newInterval = music21.interval.Interval(newNote.pitch, key.getTonic())
-            print '[doTransform] ' + note.name + ' (' + interval.name + ') -> ' + newNote.name + ' (' + newInterval.name + ')'
-            note.pitch = newNote.pitch
-
-  return score
 
 def transform():
   score = tday.mxlScores.loadScores(
     tday.mxlScores.getComposerPaths('Bach, Johann Sebastian', limit=1)
   )[0]
   score.show('text')
-  score = doTransform(score, 4, -2)
-  score = doTransform(score, 5, -2)
-  score = doTransform(score, 6, -2)
-  score = doTransform(score, 7, -2)
-  score = doTransform(score, 8, -2)
+
+  score = tday.transform.transformPitches(score, 6, 14)
+  score = tday.transform.transformPitches(score, 6, 18)
+
   score.show('text')
-  print score.write('xml', '/Users/vladh/Desktop/terrible-bach.xml')
+  print score.write('xml', '/Users/vladh/Desktop/bach-debussy.xml')
 
 def main():
-  # convert()
-  # classify()
-  transform()
+  if len(sys.argv) < 2:
+    print 'Usage: python test.py [convert|classify|transform]'
+    sys.exit(1)
+
+  action = sys.argv[1]
+
+  if action == 'convert':
+    convert()
+  elif action == 'classify':
+    classify()
+  elif action == 'transform':
+    transform()
 
 if __name__ == '__main__':
   main()

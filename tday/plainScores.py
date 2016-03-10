@@ -75,12 +75,12 @@ def getDurationFrequencies(score):
 
 def getKeyIntervalFrequencies(score):
   """
-  Calculates the frequency of keyInterval in the given score's notes.
+  Calculates the frequency of keySemitones in the given score's notes.
 
   @param intervals {plainScore}
   @return {Dict}
   """
-  return getGenericFrequencies(score, 'keyInterval')
+  return getGenericFrequencies(score, 'keySemitones')
 
 #
 # LOADING
