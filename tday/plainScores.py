@@ -44,7 +44,7 @@ elif tday.config.fileFormat == 'yaml':
   fileExt = '.yml'
 
 #
-# ANALYSIS
+# Analysis
 #
 
 def getGenericFrequencies(score, prop):
@@ -83,7 +83,7 @@ def getKeyIntervalFrequencies(score):
   return getGenericFrequencies(score, 'keySemitones')
 
 #
-# LOADING
+# Loading
 #
 
 def loadScore(path):
@@ -165,7 +165,7 @@ def getComposerData(composers, limit=None, splits=None):
   return [allScores, allLabels]
 
 #
-# WRITING
+# Writing
 #
 
 def writeScore(plainScore, path):
@@ -192,7 +192,7 @@ def writeComposerScore(plainScore, composer, name):
   writeScore(plainScore, path)
 
 #
-# MERGING / SPLITTING
+# Merging / splitting
 #
 
 def mergeScores(scores):
@@ -236,7 +236,7 @@ def splitScore(mergedScore, n):
   return scores
 
 #
-# CONVERSION
+# Conversion
 #
 
 def fromMxl(score, name='Unknown'):

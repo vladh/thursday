@@ -106,7 +106,7 @@ def getNotesFromChord(chord):
   """
   Returns a set of individual notes when given a chord.
 
-  @param chord {music21.chod.Chord}
+  @param chord {music21.chord.Chord}
   @return {List<music21.note.Note>}
   """
   notes = []

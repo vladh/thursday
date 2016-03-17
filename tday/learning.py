@@ -14,7 +14,10 @@ from sklearn.externals.six import StringIO
 import os.path
 import time
 
-def treeClassify(trainSamples, trainLabels, testSamples, testLabels, classNames=None, maxDepth=None, verbose=False):
+def treeClassify(
+  trainSamples, trainLabels, testSamples, testLabels, classNames=None,
+  maxDepth=None, verbose=False
+):
   """
   Runs a decision tree classifier on a given data set.
 

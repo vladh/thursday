@@ -49,8 +49,8 @@ options = {
     ],
     'featureExtractors': [
       ['interval frequency', tday.plainFeatures.makeIntervalFrequencyFeature],
-      # ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
-      # ['random', tday.plainFeatures.makeRandomFeature],
+      ['duration frequency', tday.plainFeatures.makeDurationFrequencyFeature],
+      ['random', tday.plainFeatures.makeRandomFeature],
     ]
   },
   'transform': {
